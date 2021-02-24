@@ -1,7 +1,9 @@
 Lua Functional
 ==============
 
-<img src="/doc/logo.png" align="right" width="174px" height="144px" />
+<img src="doc/logo.png" align="right" width="174px" height="144px" />
+
+> Note: This repo contains changes made on Lua Fun after being forked on [commit e248e00](https://github.com/luafun/luafun/commit/e248e007be4d3474224277f6ba50f53d4121bfe0). Check [CHANGELOG](CHANGELOG.md) for details.
 
 **Lua Fun** is a high-performance functional programming library for [Lua]
 designed with [LuaJIT's trace compiler][LuaJIT] in mind.
@@ -53,11 +55,9 @@ Readable? Efficient? Can your Python/Ruby/V8 do better?
 Status
 ------
 
-**Lua Fun** is in an early alpha stage. The library fully [documented]
-[Documentation] and covered with unit tests.
+**Lua Fun** is in an early alpha stage. The library fully [documented][Documentation] and covered with unit tests.
 
-[![Build Status](https://travis-ci.org/luafun/luafun.png)]
-(https://travis-ci.org/luafun/luafun)
+[![Build Status](https://travis-ci.org/luafun/luafun.png)](https://travis-ci.org/luafun/luafun)
 
 LuaJIT 2.1 alpha is recommended. The library designed in mind of fact that
 [LuaJIT traces tail-, up- and down-recursion][LuaJIT-Recursion] and has a lot of

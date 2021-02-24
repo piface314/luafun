@@ -74,7 +74,7 @@ methods.unwrap = unwrap
 -- Basic Functions
 --------------------------------------------------------------------------------
 
-local nil_gen = function(_param, _state)
+local nil_gen = function()
     return nil
 end
 
@@ -89,17 +89,23 @@ end
 
 local ipairs_gen = ipairs({}) -- get the generating function from ipairs
 
-local pairs_gen = pairs({ a = 0 }) -- get the generating function from pairs
 local map_gen = function(tab, key)
-    local value
-    local key, value = pairs_gen(tab, key)
+    local key, value = next(tab, key)
     return key, key, value
+end
+
+local function function_gen_helper(v, ...) return v, v, ... end
+
+local function_gen = function(f)
+  return function (param, state)
+    return function_gen_helper(f(param, state))
+  end
 end
 
 local rawiter = function(obj, param, state)
     assert(obj ~= nil, "invalid iterator")
     if type(obj) == "table" then
-        local mt = getmetatable(obj);
+        local mt = getmetatable(obj)
         if mt ~= nil then
             if mt == iterator_mt then
                 return obj.gen, obj.param, obj.state
@@ -109,16 +115,14 @@ local rawiter = function(obj, param, state)
                 return mt.__pairs(obj)
             end
         end
-        if #obj > 0 then
-            -- array
+        if #obj > 0 and next(obj, #obj) == nil then
             return ipairs(obj)
         else
-            -- hash
             return map_gen, obj, nil
         end
-    elseif (type(obj) == "function") then
-        return obj, param, state
-    elseif (type(obj) == "string") then
+    elseif type(obj) == "function" then
+        return function_gen(obj), param, state
+    elseif type(obj) == "string" then
         if #obj == 0 then
             return nil_gen, nil, nil
         end
@@ -576,18 +580,18 @@ exports.partition = export1(partition)
 -- Reducing
 --------------------------------------------------------------------------------
 
-local foldl_call = function(fun, start, state, ...)
+local foldl_call = function(start, fun, state, ...)
     if state == nil then
         return nil, start
     end
     return state, fun(start, ...)
 end
 
-local foldl = function(fun, start, gen_x, param_x, state_x)
+local foldl = function(start, fun, gen_x, param_x, state_x)
     while true do
-        state_x, start = foldl_call(fun, start, gen_x(param_x, state_x))
+        state_x, start = foldl_call(start, fun, gen_x(param_x, state_x))
         if state_x == nil then
-            break;
+            break
         end
     end
     return start
@@ -773,7 +777,7 @@ methods.maximum_by = methods.maximum_by
 exports.maximum_by = exports.maximum_by
 
 local totable = function(gen_x, param_x, state_x)
-    local tab, key, val = {}
+    local tab, val = {}, nil
     while true do
         state_x, val = gen_x(param_x, state_x)
         if state_x == nil then
@@ -787,7 +791,7 @@ methods.totable = method0(totable)
 exports.totable = export0(totable)
 
 local tomap = function(gen_x, param_x, state_x)
-    local tab, key, val = {}
+    local tab, key, val = {}, nil, nil
     while true do
         state_x, key, val = gen_x(param_x, state_x)
         if state_x == nil then
@@ -904,8 +908,8 @@ local zip = function(...)
     local param = { [2 * n] = 0 }
     local state = { [n] = 0 }
 
-    local i, gen_x, param_x, state_x
-    for i=1,n,1 do
+    local gen_x, param_x, state_x
+    for i = 1, n do
         local it = select(n - i + 1, ...)
         gen_x, param_x, state_x = rawiter(it)
         param[2 * i - 1] = gen_x

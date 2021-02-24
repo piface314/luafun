@@ -135,9 +135,9 @@ for _it, a in iter(iter(iter(""))) do print(a) end
 
 local function mypairs_gen(max, state)
     if (state >= max) then
-            return nil
-        end
-        return state + 1, state + 1
+        return nil
+    end
+    return state + 1
 end
 
 local function mypairs(max)

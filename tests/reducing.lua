@@ -2,17 +2,17 @@
 -- foldl
 --------------------------------------------------------------------------------
 
-print(foldl(function(acc, x) return acc + x end, 0, range(5)))
+print(foldl(0, function(acc, x) return acc + x end, range(5)))
 --[[test
 15
 --test]]
 
-print(foldl(operator.add, 0, range(5)))
+print(foldl(0, operator.add, range(5)))
 --[[test
 15
 --test]]
 
-print(foldl(function(acc, x, y) return acc + x * y; end, 0,
+print(foldl(0, function(acc, x, y) return acc + x * y; end,
     zip(range(1, 5), {4, 3, 2, 1})))
 --[[test
 20
